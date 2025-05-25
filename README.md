@@ -155,7 +155,7 @@ numbers can handle.<br><br>
 
   (This is in accordance with a
 [proposal](https://github.com/tc39/proposal-json-parse-with-source), documented
-[here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#reviver)
+[here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#reviver),
 which is not yet part of the official ECMAScript standard, but is nevertheless
 widely supported at present.)
 
