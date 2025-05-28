@@ -2,11 +2,14 @@
     "root": true,
     "extends": [
         "standard",
-        "plugin:node/recommended"
+        "plugin:n/recommended"
     ],
+    "plugins": ["chai-friendly"],
     "parserOptions": {
-        "ecmaVersion": 2020
+        "sourceType": "module",
+        "ecmaVersion": 2023
     },
+    "ignorePatterns": ["unicode.js"],
     "rules": {
         "array-bracket-spacing": [
             "error",
@@ -24,7 +27,10 @@
             "error",
             4
         ],
-        "no-process-exit": "off",
+        "no-unused-expressions": "off",
+        "chai-friendly/no-unused-expressions": "error",
+        "n/no-process-exit": "off",
+        "n/no-unsupported-features/es-syntax": "off",
         "object-curly-spacing": [
             "error",
             "never"

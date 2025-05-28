@@ -1,345 +1,330 @@
-const assert = require('assert')
-const sinon = require('sinon')
-const JSON5 = require('../lib')
+/* eslint-disable dot-notation */
+import {assert, expect} from 'chai'
+import sinon from 'sinon'
 
-const t = require('tap')
+const JSON5 = (await import('../lib/index.js')).default
 
-t.test('parse(text)', t => {
-    t.test('objects', t => {
-        t.strictSame(
-            JSON5.parse('{}'),
+describe('parse(text)', () => {
+    it('objects', () => {
+        expect(
+            JSON5.parse('{}')).to.deep.equal(
             {},
-            'parses empty objects'
+            'parses empty objects',
         )
 
-        t.strictSame(
-            JSON5.parse('{"a":1}'),
+        expect(
+            JSON5.parse('{"a":1}')).to.deep.equal(
             {a: 1},
-            'parses double string property names'
+            'parses double-quoted string property names',
         )
 
-        t.strictSame(
-            JSON5.parse("{'a':1}"),
+        expect(
+            JSON5.parse("{'a':1}")).to.deep.equal(
             {a: 1},
-            'parses single string property names'
+            'parses single-quoted string property names',
         )
 
-        t.strictSame(
-            JSON5.parse('{a:1}'),
+        expect(
+            JSON5.parse('{a:1}')).to.deep.equal(
             {a: 1},
-            'parses unquoted property names'
+            'parses unquoted property names',
         )
 
-        t.strictSame(
-            JSON5.parse('{$_:1,_$:2,a\u200C:3}'),
+        expect(
+            JSON5.parse('{$_:1,_$:2,a\u200C:3}')).to.deep.equal(
+            // eslint-disable-next-line quote-props
             {$_: 1, _$: 2, 'a\u200C': 3},
-            'parses special character property names'
+            'parses special character property names',
         )
 
-        t.strictSame(
-            JSON5.parse('{ùńîċõďë:9}'),
+        // noinspection NonAsciiCharacters
+        expect(
+            JSON5.parse('{ùńîċõďë:9}')).to.deep.equal(
+            // eslint-disable-next-line quote-props
             {'ùńîċõďë': 9},
-            'parses unicode property names'
+            'parses unicode property names',
         )
 
-        t.strictSame(
-            JSON5.parse('{\\u0061\\u0062:1,\\u0024\\u005F:2,\\u005F\\u0024:3}'),
+        expect(
+            JSON5.parse('{\\u0061\\u0062:1,\\u0024\\u005F:2,\\u005F\\u0024:3}')).to.deep.equal(
             {ab: 1, $_: 2, _$: 3},
-            'parses escaped property names'
+            'parses escaped property names',
         )
 
-        t.strictSame(
+        expect(
             // eslint-disable-next-line no-proto
-            JSON5.parse('{"__proto__":1}').__proto__,
+            JSON5.parse('{"__proto__":1}').__proto__).to.equal(
             1,
-            'preserves __proto__ property names'
+            'preserves __proto__ property names',
         )
 
-        t.strictSame(
-            JSON5.parse('{abc:1,def:2}'),
+        expect(
+            JSON5.parse('{abc:1,def:2}')).to.deep.equal(
             {abc: 1, def: 2},
-            'parses multiple properties'
+            'parses multiple properties',
         )
 
-        t.strictSame(
-            JSON5.parse('{a:{b:2}}'),
+        expect(
+            JSON5.parse('{a:{b:2}}')).to.deep.equal(
             {a: {b: 2}},
-            'parses nested objects'
+            'parses nested objects',
         )
-
-        t.end()
     })
 
-    t.test('arrays', t => {
-        t.strictSame(
-            JSON5.parse('[]'),
+    it('arrays', () => {
+        expect(
+            JSON5.parse('[]')).to.deep.equal(
             [],
-            'parses empty arrays'
+            'parses empty arrays',
         )
 
-        t.strictSame(
-            JSON5.parse('[1]'),
+        expect(
+            JSON5.parse('[1]')).to.deep.equal(
             [1],
-            'parses array values'
+            'parses array values',
         )
 
-        t.strictSame(
-            JSON5.parse('[1,2]'),
+        expect(
+            JSON5.parse('[1,2]')).to.deep.equal(
             [1, 2],
-            'parses multiple array values'
+            'parses multiple array values',
         )
 
-        t.strictSame(
-            JSON5.parse('[1,[2,3]]'),
+        expect(
+            JSON5.parse('[1,[2,3]]')).to.deep.equal(
             [1, [2, 3]],
-            'parses nested arrays'
+            'parses nested arrays',
         )
-
-        t.end()
     })
 
-    t.test('nulls', t => {
-        t.equal(
-            JSON5.parse('null'),
+    it('nulls', () => {
+        expect(
+            JSON5.parse('null')).to.equal(
             null,
-            'parses nulls'
+            'parses nulls',
         )
-
-        t.end()
     })
 
-    t.test('Booleans', t => {
-        t.equal(
-            JSON5.parse('true'),
+    it('Booleans', () => {
+        expect(
+            JSON5.parse('true')).to.equal(
             true,
-            'parses true'
+            'parses true',
         )
 
-        t.equal(
-            JSON5.parse('false'),
+        expect(
+            JSON5.parse('false')).to.equal(
             false,
-            'parses false'
+            'parses false',
         )
-
-        t.end()
     })
 
-    t.test('numbers', t => {
-        t.strictSame(
-            JSON5.parse('[0,0.,0e0]'),
+    it('numbers', () => {
+        expect(
+            JSON5.parse('[0,0.,0e0]')).to.deep.equal(
             [0, 0, 0],
-            'parses leading zeroes'
+            'parses leading zeroes',
         )
 
-        t.strictSame(
-            JSON5.parse('[1,23,456,7890]'),
+        expect(
+            JSON5.parse('[1,23,456,7890]')).to.deep.equal(
             [1, 23, 456, 7890],
-            'parses integers'
+            'parses integers',
         )
 
-        t.strictSame(
-            JSON5.parse('[-1,+2,-.1,-0]'),
+        expect(
+            JSON5.parse('[-1,+2,-.1,-0]')).to.deep.equal(
             [-1, +2, -0.1, -0],
-            'parses signed numbers'
+            'parses signed numbers',
         )
 
-        t.strictSame(
-            JSON5.parse('[.1,.23]'),
+        expect(
+            JSON5.parse('[.1,.23]')).to.deep.equal(
             [0.1, 0.23],
-            'parses leading decimal points'
+            'parses leading decimal points',
         )
 
-        t.strictSame(
-            JSON5.parse('[1.0,1.23]'),
+        expect(
+            JSON5.parse('[1.0,1.23]')).to.deep.equal(
             [1, 1.23],
-            'parses fractional numbers'
+            'parses fractional numbers',
         )
 
-        t.strictSame(
-            JSON5.parse('[1e0,1e1,1e01,1.e0,1.1e0,1e-1,1e+1]'),
+        expect(
+            JSON5.parse('[1e0,1e1,1e01,1.e0,1.1e0,1e-1,1e+1]')).to.deep.equal(
             [1, 10, 10, 1, 1.1, 0.1, 10],
-            'parses exponents'
+            'parses exponents',
         )
 
-        t.strictSame(
-            JSON5.parse('[0x1,0x10,0xff,0xFF]'),
+        expect(
+            JSON5.parse('[0x1,0x10,0xff,0xFF]')).to.deep.equal(
             [1, 16, 255, 255],
-            'parses hexadecimal numbers'
+            'parses hexadecimal numbers',
         )
 
-        t.strictSame(
-            JSON5.parse('[Infinity,-Infinity]'),
+        expect(
+            JSON5.parse('[Infinity,-Infinity]')).to.deep.equal(
             [Infinity, -Infinity],
-            'parses signed and unsigned Infinity'
+            'parses signed and unsigned Infinity',
         )
 
-        t.ok(
-            isNaN(JSON5.parse('NaN')),
-            'parses NaN'
-        )
+        // parses NaN
+        expect(
+            isNaN(JSON5.parse('NaN'))).to.be.ok
 
-        t.ok(
-            isNaN(JSON5.parse('-NaN')),
-            'parses signed NaN'
-        )
+        // parses signed NaN
+        expect(
+            isNaN(JSON5.parse('-NaN'))).to.be.ok
 
-        t.strictSame(
-            JSON5.parse('1'),
+        expect(
+            JSON5.parse('1')).to.equal(
             1,
-            'parses 1'
+            'parses 1',
         )
 
-        t.strictSame(
-            JSON5.parse('+1.23e100'),
+        expect(
+            JSON5.parse('+1.23e100')).to.equal(
             1.23e100,
-            'parses +1.23e100'
+            'parses +1.23e100',
         )
 
-        t.strictSame(
-            JSON5.parse('0x1'),
+        expect(
+            JSON5.parse('0x1')).to.equal(
             0x1,
-            'parses bare hexadecimal number'
+            'parses bare hexadecimal number',
         )
 
-        t.strictSame(
-            JSON5.parse('-0x0123456789abcdefABCDEF'),
+        expect(
+            JSON5.parse('-0x0123456789abcdefABCDEF')).to.equal(
+            // eslint-disable-next-line no-loss-of-precision
             -0x0123456789abcdefABCDEF,
-            'parses bare long hexadecimal number'
+            'parses bare hexadecimal number',
         )
-
-        t.end()
     })
 
-    t.test('strings', t => {
-        t.equal(
-            JSON5.parse('"abc"'),
+    it('strings', () => {
+        expect(
+            JSON5.parse('"abc"')).to.equal(
             'abc',
-            'parses double quoted strings'
+            'parses double-quoted strings',
         )
 
-        t.equal(
-            JSON5.parse("'abc'"),
+        expect(
+            JSON5.parse("'abc'")).to.equal(
             'abc',
-            'parses single quoted strings'
+            'parses single-quoted strings',
         )
 
-        t.strictSame(
-            JSON5.parse(`['"',"'"]`),
-            ['"', "'"],
+        expect(
+            // eslint-disable-next-line quotes
+            JSON5.parse(`['"',"'",'\`']`)).to.deep.equal(
+            ['"', "'", '`'],
             'parses quotes in strings')
 
-        t.equal(
-            JSON5.parse(`'\\b\\f\\n\\r\\t\\v\\0\\x0f\\u01fF\\\n\\\r\n\\\r\\\u2028\\\u2029\\a\\'\\"'`),
-            `\b\f\n\r\t\v\0\x0f\u01FF\a'"`, // eslint-disable-line no-useless-escape
-            'parses escaped characters'
+        expect(
+            // eslint-disable-next-line quotes
+            JSON5.parse(`'\\b\\f\\n\\r\\t\\v\\0\\x0f\\u01fF\\\n\\\r\n\\\r\\\u2028\\\u2029\\a\\'\\"'`)).to.equal(
+            `\b\f\n\r\t\v\0\x0f\u01FF\a'"`, // eslint-disable-line no-useless-escape,quotes
+            'parses escaped characters',
         )
-
-        t.test('parses line and paragraph separators with a warning', t => {
-            const mock = sinon.mock(console)
-            mock
-                .expects('warn')
-                .twice()
-                .calledWithMatch('not valid ECMAScript')
-
-            assert.deepStrictEqual(
-                JSON5.parse("'\u2028\u2029'"),
-                '\u2028\u2029'
-            )
-
-            mock.verify()
-            mock.restore()
-
-            t.end()
-        })
-
-        t.end()
     })
 
-    t.test('comments', t => {
-        t.strictSame(
-            JSON5.parse('{//comment\n}'),
-            {},
-            'parses single-line comments'
+    it('parses line and paragraph separators with a warning', () => {
+        const mock = sinon.mock(console)
+        mock
+            .expects('warn')
+            .twice()
+            .calledWithMatch('not valid ECMAScript')
+
+        assert.deepStrictEqual(
+            JSON5.parse("'\u2028\u2029'"),
+            '\u2028\u2029',
         )
 
-        t.strictSame(
-            JSON5.parse('{}//comment'),
-            {},
-            'parses single-line comments at end of input'
-        )
-
-        t.strictSame(
-            JSON5.parse('{/*comment\n** */}'),
-            {},
-            'parses multi-line comments'
-        )
-
-        t.end()
+        mock.verify()
+        mock.restore()
     })
 
-    t.test('whitespace', t => {
-        t.strictSame(
-            JSON5.parse('{\t\v\f \u00A0\uFEFF\n\r\u2028\u2029\u2003}'),
+    it('comments', () => {
+        expect(
+            JSON5.parse('{//comment\n}')).to.deep.equal(
             {},
-            'parses whitespace'
+            'parses single-line comments',
         )
 
-        t.end()
+        expect(
+            JSON5.parse('{}//comment')).to.deep.equal(
+            {},
+            'parses single-line comments at end of input',
+        )
+
+        expect(
+            JSON5.parse('{/*comment\n** */}')).to.deep.equal(
+            {},
+            'parses multi-line comments',
+        )
     })
 
-    t.end()
+    it('whitespace', () => {
+        expect(
+            JSON5.parse('{\t\v\f \u00A0\uFEFF\n\r\u2028\u2029\u2003}')).to.deep.equal(
+            {},
+            'parses whitespace',
+        )
+    })
 })
 
-t.test('parse(text, reviver)', t => {
-    t.strictSame(
-        JSON5.parse('{a:1,b:2}', (k, v) => (k === 'a') ? 'revived' : v),
+it('parse(text, reviver)', () => {
+    expect(
+        JSON5.parse('{a:1,b:2}', (k, v) => (k === 'a') ? 'revived' : v)).to.deep.equal(
         {a: 'revived', b: 2},
-        'modifies property values'
+        'modifies property values',
     )
 
-    t.strictSame(
-        JSON5.parse('{a:{b:2}}', (k, v) => (k === 'b') ? 'revived' : v),
+    expect(
+        JSON5.parse('{a:{b:2}}', (k, v) => (k === 'b') ? 'revived' : v)).to.deep.equal(
         {a: {b: 'revived'}},
-        'modifies nested object property values'
+        'modifies nested object property values',
     )
 
-    t.strictSame(
-        JSON5.parse('{a:1,b:2}', (k, v) => (k === 'a') ? undefined : v),
+    expect(
+        JSON5.parse('{a:1,b:2}', (k, v) => (k === 'a') ? undefined : v)).to.deep.equal(
         {b: 2},
-        'deletes property values'
+        'deletes property values',
     )
 
-    t.strictSame(
-        JSON5.parse('[0,1,2]', (k, v) => (k === '1') ? 'revived' : v),
+    expect(
+        JSON5.parse('[0,1,2]', (k, v) => (k === '1') ? 'revived' : v)).to.deep.equal(
         [0, 'revived', 2],
-        'modifies array values'
+        'modifies array values',
     )
 
-    t.strictSame(
-        JSON5.parse('[0,[1,2,3]]', (k, v) => (k === '2') ? 'revived' : v),
+    expect(
+        JSON5.parse('[0,[1,2,3]]', (k, v) => (k === '2') ? 'revived' : v)).to.deep.equal(
         [0, [1, 2, 'revived']],
-        'modifies nested array values'
+        'modifies nested array values',
     )
 
-    t.strictSame(
-        JSON5.parse('[0,1,2]', (k, v) => (k === '1') ? undefined : v),
+    // noinspection JSConsecutiveCommasInArrayLiteral
+    expect(
+        JSON5.parse('[0,1,2]', (k, v) => (k === '1') ? undefined : v)).to.deep.equal(
         [0, , 2], // eslint-disable-line no-sparse-arrays
-        'deletes array values'
+        'deletes array values',
     )
 
-    t.equal(
-        JSON5.parse('1', (k, v) => (k === '') ? 'revived' : v),
+    expect(
+        JSON5.parse('1', (k, v) => (k === '') ? 'revived' : v)).to.equal(
         'revived',
-        'modifies the root value'
+        'modifies the root value',
     )
 
-    t.strictSame(
-        JSON5.parse('{a:{b:2}}', function (k, v) { return (k === 'b' && this.b) ? 'revived' : v }),
+    expect(
+        JSON5.parse('{a:{b:2}}', function (k, v) { return (k === 'b' && this.b) ? 'revived' : v })).to.deep.equal(
         {a: {b: 'revived'}},
-        'sets `this` to the parent value'
+        'sets `this` to the parent value',
     )
 
-    t.strictSame(
+    expect(
         JSON5.parse('{a:1234567890123456789001234567890,b:"x"}', function (k, v, context) {
             if (typeof v === 'number') {
                 return BigInt(context.source)
@@ -347,10 +332,8 @@ t.test('parse(text, reviver)', t => {
                 return context.source.replace(/"/g, '@')
             }
             return v
-        }),
+        })).to.deep.equal(
         {a: 1234567890123456789001234567890n, b: '@x@'},
-        'make sure content of primitive values is accessible'
+        'make sure content of primitive values is accessible',
     )
-
-    t.end()
 })
