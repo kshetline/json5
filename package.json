@@ -24,7 +24,7 @@
     "prepublishOnly": "npm run production",
     "preversion": "npm run production",
     "production": "run-s test build",
-    "mocha": "nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=text --reporter=html mocha test/**/*.js",
+    "mocha": "nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=text --reporter=html mocha test/**/*.spec.mjs",
     "test": "run-s lint-report mocha",
     "version": "npm run build-package && git add package.json5"
   },
