@@ -1,4 +1,6 @@
 /* eslint-disable dot-notation */
+// noinspection JSUnresolvedReference
+
 import {assert, expect} from 'chai'
 import sinon from 'sinon'
 
@@ -56,6 +58,13 @@ describe('parse(text)', () => {
             JSON5.parse('{"__proto__":1}').__proto__).to.equal(
             1,
             'preserves __proto__ property names',
+        )
+
+        expect(
+            // eslint-disable-next-line no-proto
+            JSON5.parse('{"__proto__":1}', (k, v) => v).__proto__).to.equal(
+            1,
+            'preserves __proto__ property names when reviver is used',
         )
 
         expect(

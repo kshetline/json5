@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 import {assert} from 'chai'
 import {createRequire} from 'module'
 import sinon from 'sinon'

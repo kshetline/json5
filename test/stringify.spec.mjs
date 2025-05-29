@@ -156,8 +156,8 @@ describe('stringify', () => {
         })
 
         it('stringifies String objects', () => {
-            // eslint-disable-next-line no-new-wrappers
-            assert.strictEqual(JSON5.stringify(new String('abc')), "'abc'")
+            // noinspection JSCheckFunctionSignatures
+            assert.strictEqual(JSON5.stringify(new String('abc')), "'abc'") // eslint-disable-line no-new-wrappers
         })
     })
 
@@ -262,8 +262,8 @@ describe('stringify', () => {
         })
 
         it('accepts String objects', () => {
-            // eslint-disable-next-line no-new-wrappers
-            assert.strictEqual(JSON5.stringify([1], null, new String('\t')), '[\n\t1,\n]')
+            // noinspection JSCheckFunctionSignatures
+            assert.strictEqual(JSON5.stringify([1], null, new String('\t')), '[\n\t1,\n]') // eslint-disable-line no-new-wrappers
         })
     })
 
@@ -277,8 +277,8 @@ describe('stringify', () => {
         })
 
         it('accepts String and Number objects when an array is provided', () => {
-            // eslint-disable-next-line no-new-wrappers
-            assert.strictEqual(JSON5.stringify({a: 1, b: 2, 3: 3}, [new String('a'), new Number(3)]), "{a:1,'3':3}")
+            // noinspection JSCheckFunctionSignatures
+            assert.strictEqual(JSON5.stringify({a: 1, b: 2, 3: 3}, [new String('a'), new Number(3)]), "{a:1,'3':3}") // eslint-disable-line no-new-wrappers
         })
 
         it('replaces values when a function is provided', () => {
@@ -291,21 +291,13 @@ describe('stringify', () => {
         it('sets `this` to the parent value', () => {
             assert.strictEqual(
                 JSON5.stringify({a: {b: 1}}, function (k, v) { return (k === 'b' && this.b) ? 2 : v }),
-                '{a:{b:2}}',
-                'sets `this` to the parent value')
+                '{a:{b:2}}')
         })
 
         it('deletes object values when a replacer returns `undefined`', () => {
             assert.strictEqual(
                 JSON5.stringify({a: 1, b: 2}, (key, value) => (key === 'b') ? undefined : value),
                 '{a:1}',
-            )
-        })
-
-        it('sets `this` to the parent value', () => {
-            assert.strictEqual(
-                JSON5.stringify({a: {b: 1}}, function (k, v) { return (k === 'b' && this.b) ? 2 : v }),
-                '{a:{b:2}}',
             )
         })
 

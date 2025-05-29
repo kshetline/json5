@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 import {assert} from 'chai'
 import child from 'child_process'
 import fs from 'fs'
