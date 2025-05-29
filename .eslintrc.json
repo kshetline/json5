@@ -9,7 +9,7 @@
         "sourceType": "module",
         "ecmaVersion": 2023
     },
-    "ignorePatterns": ["unicode.js"],
+    "ignorePatterns": ["unicode.js", "*.d.ts"],
     "rules": {
         "array-bracket-spacing": [
             "error",
