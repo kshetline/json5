@@ -19,6 +19,10 @@
             "error",
             "as-needed"
         ],
+        "camelcase": [
+            "error",
+            { "allow": ["^LOWER_[a-z]", "^_\\$"] }
+        ],
         "comma-dangle": [
             "error",
             "always-multiline"
@@ -34,6 +38,11 @@
         "object-curly-spacing": [
             "error",
             "never"
+        ],
+        "yoda": [
+            "error",
+            "never",
+            { "exceptRange": true }
         ]
     }
 }
