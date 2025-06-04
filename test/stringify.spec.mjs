@@ -313,6 +313,23 @@ describe('stringify', () => {
                 }),
                 '[1,77]',
             )
+
+            assert.strictEqual(
+                JSON5.stringify([1, 2, 3, 4, 5], function (key, value) {
+                    if (key === '2') {
+                        this.splice(parseInt(key), 1)
+                        return undefined
+                    } else {
+                        return value
+                    }
+                }),
+                '[1,2,4,5]',
+            )
+
+            assert.strictEqual(
+                JSON5.stringify([1, 2, 3, 4, 5], (key, value) => key === '2' ? undefined : value),
+                '[1,2,null,4,5]',
+            )
         })
 
         it('does not shrink array when not manipulating holder', () => {
