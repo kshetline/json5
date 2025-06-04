@@ -403,6 +403,18 @@ describe('JSON5', () => {
                 }
             })
 
+            it('throws on unclosed objects after property values', () => {
+                try {
+                    JSON5.parse('{a:1')
+                    expect(false).to.be.ok
+                } catch (err) {
+                    expect(err instanceof SyntaxError &&
+                 /^JSON5: invalid end of input/.test(err.message) &&
+                 err.lineNumber === 1 &&
+                 err.columnNumber === 5).to.be.ok
+                }
+            })
+
             it('throws on unclosed arrays before values', () => {
                 try {
                     JSON5.parse('[')

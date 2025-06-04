@@ -33,7 +33,7 @@ describe('stringify', () => {
 
         it('stringifies unicode property names', () => {
             // noinspection NonAsciiCharacters
-            assert.strictEqual(JSON5.stringify({'ùńîċõďë': 9}), '{ùńîċõďë:9}') // eslint-disable-line quote-props
+            assert.strictEqual(JSON5.stringify({'ùńîċõďë': 9, 𠀋: 0}), '{ùńîċõďë:9,𠀋:0}') // eslint-disable-line quote-props
         })
 
         it('stringifies escaped property names', () => {
@@ -128,7 +128,7 @@ describe('stringify', () => {
 
     describe('strings', () => {
         it('stringifies single quoted strings', () => {
-            assert.strictEqual(JSON5.stringify('abc'), "'abc'")
+            assert.strictEqual(JSON5.stringify('ab😀c'), "'ab😀c'")
         })
 
         it('stringifies double quoted strings', () => {
@@ -298,6 +298,33 @@ describe('stringify', () => {
             assert.strictEqual(
                 JSON5.stringify({a: 1, b: 2}, (key, value) => (key === 'b') ? undefined : value),
                 '{a:1}',
+            )
+        })
+
+        it('can shrink array by manipulating holder', () => {
+            assert.strictEqual(
+                JSON5.stringify([1, 77, 3, 44], function (key, value) {
+                    if (key > 1) {
+                        --this.length
+                        return undefined
+                    } else {
+                        return value
+                    }
+                }),
+                '[1,77]',
+            )
+        })
+
+        it('does not shrink array when not manipulating holder', () => {
+            assert.strictEqual(
+                JSON5.stringify([1, 77, 3, 44], function (key, value) {
+                    if (key > 1) {
+                        return undefined
+                    } else {
+                        return value
+                    }
+                }),
+                '[1,77,null,null]',
             )
         })
 

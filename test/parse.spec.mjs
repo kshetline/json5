@@ -160,13 +160,13 @@ describe('parse(text)', () => {
         )
 
         expect(
-            JSON5.parse('[1e0,1e1,1e01,1.e0,1.1e0,1e-1,1e+1]')).to.deep.equal(
-            [1, 10, 10, 1, 1.1, 0.1, 10],
+            JSON5.parse('[1e0,1E1,1e01,1.e0,1.E0,1.1e0,1.1E0,1e-1,1E+1,0E0]')).to.deep.equal(
+            [1, 10, 10, 1, 1, 1.1, 1.1, 0.1, 10, 0],
             'parses exponents',
         )
 
         expect(
-            JSON5.parse('[0x1,0x10,0xff,0xFF]')).to.deep.equal(
+            JSON5.parse('[0x1,0X10,0xff,0XFF]')).to.deep.equal(
             [1, 16, 255, 255],
             'parses hexadecimal numbers',
         )
@@ -213,8 +213,8 @@ describe('parse(text)', () => {
 
     it('strings', () => {
         expect(
-            JSON5.parse('"abc"')).to.equal(
-            'abc',
+            JSON5.parse('"ab😀c"')).to.equal(
+            'ab😀c',
             'parses double-quoted strings',
         )
 
@@ -322,6 +322,19 @@ it('parse(text, reviver)', () => {
     )
 
     expect(
+        JSON5.parse('[0,1,2]', function (k, v) {
+            if (k === '1') {
+                this.splice(parseInt(k), 1)
+                return undefined
+            } else {
+                return v
+            }
+        })).to.deep.equal(
+        [0, 2],
+        'deletes array values and shrinks array',
+    )
+
+    expect(
         JSON5.parse('1', (k, v) => (k === '') ? 'revived' : v)).to.equal(
         'revived',
         'modifies the root value',
@@ -345,4 +358,23 @@ it('parse(text, reviver)', () => {
         {a: 1234567890123456789001234567890n, b: '@x@'},
         'make sure content of primitive values is accessible',
     )
+
+    describe('very long strings', () => {
+        it('parse long string (1MB)', () => {
+            const s = 'a'.repeat(1000 * 1000)
+            assert.strictEqual(JSON5.parse(`'${s}'`), s)
+        })
+
+        it('parse long escaped string (20KB)', () => {
+            const s = '\\t'.repeat(10000)
+            assert.strictEqual(JSON5.parse(`'${s}'`), s.replace(/\\t/g, '\t'))
+        })
+
+        // Let's not run this slow test all the time.
+        xit('parse long string (100MB)', function () {
+            this.timeout(15000)
+            const s = 'z'.repeat(100 * 1000 * 1000)
+            assert.strictEqual(JSON5.parse(`'${s}'`), s)
+        })
+    })
 })
