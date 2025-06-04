@@ -26,6 +26,7 @@
     "production": "run-s test build",
     "mocha": "nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=text --reporter=html mocha test/**/*.spec.mjs",
     "test": "run-s lint-report mocha",
+    "speed-test": "node test/speed-test.mjs",
     "version": "npm run build-package && git add package.json5"
   },
   "repository": {
@@ -53,6 +54,9 @@
   "homepage": "http://json5.org/",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/chai": "^4.3.1",
+    "benchmark": "^2.1.4",
+    "by-request": "^1.3.4",
     "chai": "^4.3.6",
     "core-js": "^2.6.11",
     "eslint": "^8.57.1",
