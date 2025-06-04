@@ -96,7 +96,8 @@ from the Chromium/Blink project.
 
 ## Specification
 For a detailed explanation of the JSON5 format, please read the [official
-specification](https://json5.github.io/json5-spec/).
+specification](https://json5.github.io/json5-spec/). You can also view
+[a diagram of the grammar](docs/grammar.html).
 
 ## Installation and Usage
 ### Node.js
