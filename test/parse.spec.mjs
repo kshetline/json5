@@ -359,23 +359,37 @@ it('parse(text, reviver)', () => {
         {a: 1234567890123456789001234567890n, b: '@x@'},
         'make sure content of primitive values is accessible',
     )
+})
 
-    describe('very long strings', () => {
-        it('parse long string (1MB)', () => {
-            const s = 'a'.repeat(1000 * 1000)
-            assert.strictEqual(JSON5.parse(`'${s}'`), s)
-        })
+describe('very long strings', () => {
+    it('parse long string (1MB)', () => {
+        const s = 'a'.repeat(1000 * 1000)
+        assert.strictEqual(JSON5.parse(`'${s}'`), s)
+    })
 
-        it('parse long escaped string (20KB)', () => {
-            const s = '\\t'.repeat(10000)
-            assert.strictEqual(JSON5.parse(`'${s}'`), s.replace(/\\t/g, '\t'))
-        })
+    it('parse long escaped string (20KB)', () => {
+        const s = '\\t'.repeat(10000)
+        assert.strictEqual(JSON5.parse(`'${s}'`), s.replace(/\\t/g, '\t'))
+    })
 
-        // Let's not run this slow test all the time.
-        xit('parse long string (100MB)', function () {
-            this.timeout(15000)
-            const s = 'z'.repeat(100 * 1000 * 1000)
-            assert.strictEqual(JSON5.parse(`'${s}'`), s)
-        })
+    // Let's not run this slow test all the time.
+    xit('parse long string (100MB)', function () {
+        this.timeout(15000)
+        const s = 'z'.repeat(100 * 1000 * 1000)
+        assert.strictEqual(JSON5.parse(`'${s}'`), s)
+    })
+})
+
+describe('line ending agnosticism', () => {
+    it('counts lines correctly', () => {
+        try {
+            JSON5.parse('[1,\n2,\r3,\r\n4,\u20285,\u2029?]')
+            expect(false).to.be.ok
+        } catch (err) {
+            expect(err instanceof SyntaxError &&
+                /^JSON5: invalid character/.test(err.message) &&
+                err.lineNumber === 6 &&
+                err.columnNumber === 1).to.be.ok
+        }
     })
 })
