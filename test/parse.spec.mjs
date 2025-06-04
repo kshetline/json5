@@ -349,6 +349,7 @@ it('parse(text, reviver)', () => {
     expect(
         JSON5.parse('{a:1234567890123456789001234567890,b:"x"}', function (k, v, context) {
             if (typeof v === 'number') {
+                // eslint-disable-next-line n/no-unsupported-features/es-builtins
                 return BigInt(context.source)
             } else if (typeof v === 'string') {
                 return context.source.replace(/"/g, '@')
