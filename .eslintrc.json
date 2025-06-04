@@ -35,6 +35,7 @@
         "chai-friendly/no-unused-expressions": "error",
         "n/no-process-exit": "off",
         "n/no-unsupported-features/es-syntax": "off",
+        "n/no-unsupported-features/node-builtins": "off",
         "object-curly-spacing": [
             "error",
             "never"
